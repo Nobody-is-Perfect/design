@@ -1,0 +1,232 @@
+openapi: 3.0.0
+info:
+  title: game
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /lobby/list:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-lobby-list
+  '/lobby/{game_id}/join/{user_id}':
+    parameters:
+      - schema:
+          type: string
+        name: user_id
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: game_id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-lobby-lobby_id-join
+      description: ''
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: player_token
+  '/lobby/{lobby_id}':
+    parameters:
+      - schema:
+          type: string
+        name: lobby_id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-lobby-lobby_id
+  '/game/{game_id}/status':
+    parameters:
+      - schema:
+          type: string
+        name: game_id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  game:
+                    type: object
+                    properties:
+                      game_id:
+                        type: string
+                      players:
+                        type: array
+                        items:
+                          type: string
+                      scores:
+                        type: object
+                        description: map from player_id to score
+                        properties:
+                          player_id:
+                            type: string
+                            description: play
+                      current_question_id:
+                        type: string
+                      current_question:
+                        type: string
+                      '':
+                        type: string
+        '':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  game_id:
+                    type: string
+                  players:
+                    type: array
+                    description: list of player_ids
+                    items:
+                      type: string
+                  question:
+                    type:
+                      - string
+                      - 'null'
+                    description: 'the current question, with placeholders'
+                    example: '{Bern} is the capital of Switzerland'
+                  answers:
+                    type:
+                      - 'null'
+                      - array
+                    description: 'the provided answers, should only be nun-null if all players have provided an answer'
+                    items:
+                      type: object
+                      properties:
+                        answer_id:
+                          type: string
+                        answer:
+                          type: string
+                        is_correct:
+                          type: boolean
+                  is_running:
+                    type: boolean
+                    description: indicator if the game has finished
+                  scores:
+                    type: object
+                    description: map from player to their respective score
+                    properties:
+                      player_id:
+                        type: string
+                  current_chosen_player:
+                    type: string
+                    description: id of the current player to chose the topic
+                  status_type:
+                    type: string
+                    enum:
+                      - setup
+                      - running
+                      - ended
+                      - topic-choice
+                      - gathering-answers
+                      - gathering-votes
+                      - displaying-scores
+          description: ''
+      operationId: get-game-game_id-status
+      description: 'Returns the current game status, see response.'
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: player_token
+  '/game/{game_id}/give_answer':
+    parameters:
+      - schema:
+          type: string
+        name: game_id
+        in: path
+        required: true
+    post:
+      summary: ''
+      operationId: post-game-game_id-give_answer
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answers:
+                  type: array
+                  description: 'list of provided answers, there can be multiple, but this is not often the case'
+                  items:
+                    type: string
+            examples: {}
+      description: ''
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: player_token
+  '/game/{game_id}/select_topic/{topic_id}':
+    parameters:
+      - schema:
+          type: string
+        name: game_id
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: topic_id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-game-game_id-select_topic
+      description: ''
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: player_token
+  '/game/{game_id}/topics':
+    parameters:
+      - schema:
+          type: string
+        name: game_id
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      operationId: get-game-game_id-topics
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  topic_id:
+                    type: string
+                  topic_title:
+                    type: string
+components:
+  schemas: {}
