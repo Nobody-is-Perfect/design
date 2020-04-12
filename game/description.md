@@ -18,7 +18,8 @@ Content-Type: application/json
 Location: /players/c47dbdc6-7778-41fc-a456-5ba74e365f64
 
 {
-  "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64"
+  "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+  "name": "My PlayerName"
 }
 ```
 
@@ -29,7 +30,8 @@ POST /games HTTP/1.1
 Content-Type: application/json
 
 {
-  "name": "My GameName"
+  "name": "My GameName",
+  "numberOfRounds": 3
 }
 
 
@@ -48,7 +50,7 @@ POST /games/74f3f450-86c9-4525-bd15-d94bd02bd775/join HTTP/1.1
 Content-Type: application/json
 
 {
-  "playerId": "c47dbdc6-7778-41fc-a456-5ba74e365f64"
+  "player": "c47dbdc6-7778-41fc-a456-5ba74e365f64"
 }
 
 
@@ -68,8 +70,14 @@ Content-Type: application/json
 {
   "id": "74f3f450-86c9-4525-bd15-d94bd02bd775",
   "name": "My GameName",
+  "numberOfRounds": 3,
   "status": "waiting-for-players",
-  "players": ["c47dbdc6-7778-41fc-a456-5ba74e365f64"]
+  "players": [
+    {
+      "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+      "name": "My PlayerName"
+    }
+  ]
 }
 ```
 
@@ -84,7 +92,14 @@ Content-Type: application/json
 
 [{
   "id": "74f3f450-86c9-4525-bd15-d94bd02bd775",
-  "name": "My GameName"
+  "numberOfRounds": 3,
+  "name": "My GameName",
+  "players": [
+    {
+      "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+      "name": "My PlayerName"
+    }
+  ]
 }]
 ```
 
@@ -94,7 +109,7 @@ POST /games/74f3f450-86c9-4525-bd15-d94bd02bd775/join HTTP/1.1
 Content-Type: application/json
 
 {
-  "playerId": "83f8e222-e150-4b85-9026-d4cb65a9ab97"
+  "player": "83f8e222-e150-4b85-9026-d4cb65a9ab97"
 }
 
 
@@ -114,8 +129,18 @@ Content-Type: application/json
 {
   "id": "74f3f450-86c9-4525-bd15-d94bd02bd775",
   "name": "My GameName",
+  "numberOfRounds": 3,
   "status": "waiting-for-players",
-  "players": ["c47dbdc6-7778-41fc-a456-5ba74e365f64", "83f8e222-e150-4b85-9026-d4cb65a9ab97"]
+  "players": [
+    {
+      "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+      "name": "My PlayerName"
+    },
+    {
+      "id": "83f8e222-e150-4b85-9026-d4cb65a9ab97",
+      "name": "My Other Player"
+    }
+  ]
 }
 ```
 
@@ -133,8 +158,18 @@ Content-Type: application/json
 {
   "id": "74f3f450-86c9-4525-bd15-d94bd02bd775",
   "name": "My GameName",
+  "numberOfRounds": 3,
   "status": "started",
-  "players": ["c47dbdc6-7778-41fc-a456-5ba74e365f64", "83f8e222-e150-4b85-9026-d4cb65a9ab97"]
+  "players": [
+    {
+      "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+      "name": "My PlayerName"
+    },
+    {
+      "id": "83f8e222-e150-4b85-9026-d4cb65a9ab97",
+      "name": "My Other Player"
+    }
+  ]
 }
 ```
 
@@ -147,11 +182,13 @@ define the flow of the game:
 var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/games/" + gameId);
 ```
 
-## Flow of a round
 
-0. The round has started. A player `P` is randomly selected to choose the current topic by the backend. 
 
-```
+## Flow of a round (Events sent from and to the backend to the webclients over the websocket)
+
+1. The round has started. A player `P` is randomly selected to choose the topic of the upcoming question by the backend. 
+
+```json
 {
   "event": "round.started",
   "payload": {
@@ -165,9 +202,9 @@ var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port 
 }
 ```
 
-2. This player `P` choses the current topic by publishing a message to the websocket:
+2. The player `P` choses the current topic by publishing a message to the websocket. All other players do not need to perform any action here:
 
-```
+```json
 {
   "event": "round.topic.selection_performed",
   "payload": {
@@ -176,8 +213,8 @@ var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port 
 }
 ```
 
-3. The server choses a random question that is from that topic and notifies each subscribed client:
-```
+3. The server choses a random question that is from the selected topic and notifies each subscribed client:
+```json
 {
   "event": "round.question.completion_requested",
   "payload": {
@@ -189,7 +226,7 @@ var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port 
 
 4. All players provide an answer to complete the sentence given by the current question. Player `P` is supposed to answer the question honestly, whereas all players `P_i != P` can complete the question with an arbitrary solution:
 ient:
-```
+```json
 {
   "event": "round.question.completion_performed",
   "payload": {
@@ -200,7 +237,7 @@ ient:
 }
 ```
 5. The server provides all players with the options.
-```
+```json
 {
   "event": "round.answer.selection_requested",
   "payload": {
@@ -212,19 +249,19 @@ ient:
 ```
 
 6. All players make a choice:
-```
+```json
 {
   "event": "round.answer.selection_performed",
   "payload": {
     "playerId": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
     "chosenTopic": "topic1",
     "chosenQuestion": "What is the answer to life, the universe and everything? {placeholder}",
-    "chosenAnswer": ["42", "..."]
+    "chosenAnswer": "42"
   }
 }
 ```
 7. The server presents who voted for what answer, highlights the correct answer, and provides the latest score:
-```
+```json
 {
   "event": "round.ended",
   "payload": {
@@ -233,19 +270,55 @@ ient:
     "correctAnswer": "42",
     "scores": [
       {
-        "playerId": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
-        "score": 10,
+        "player": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+        "score": 10
       },
       {
-        "playerId": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
-        "score": 2,
+        "player": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+        "score": 2
       }
     ]
   }
 }
 ```
 
-The same procedure repeats from the beginning.
+The same procedure repeats from the beginning as long as there are rounds left to play.
+
+## Game End
+Once all rounds have been played, the following event is sent to all clients and the game is removed from the server:
+
+```json
+{
+  "event": "game.ended",
+  "payload": {
+    "id": "74f3f450-86c9-4525-bd15-d94bd02bd775",
+    "name": "My GameName",
+    "numberOfRounds": 3,
+    "status": "ended",
+    "players": [
+      {
+        "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+        "name": "My PlayerName"
+      },
+      {
+        "id": "83f8e222-e150-4b85-9026-d4cb65a9ab97",
+        "name": "My Other Player"
+      }
+    ],
+    "scores": [
+      {
+        "player": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+        "score": 10
+      },
+      {
+        "player": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+        "score": 2
+      }
+    ]
+  }
+}
+```
+
 
 ## Score computation
 
