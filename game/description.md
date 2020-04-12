@@ -272,6 +272,18 @@ var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port 
     "chosenTopic": "topic1",
     "chosenQuestion": "What is the answer to life, the universe and everything? {placeholder}",
     "correctAnswer": "42",
+    "players": [
+      {
+        "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+        "name": "My PlayerName",
+        "chosenAnswer": "42"
+      },
+      {
+        "id": "83f8e222-e150-4b85-9026-d4cb65a9ab97",
+        "name": "My Other Player",
+        "chosenAnswer": "I don't know"
+      }
+    ],
     "scores": [
       {
         "player": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
@@ -302,13 +314,11 @@ Once all rounds have been played, the following event is sent to all clients and
     "players": [
       {
         "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
-        "name": "My PlayerName",
-        "chosenAnswer": "42"
+        "name": "My PlayerName"
       },
       {
         "id": "83f8e222-e150-4b85-9026-d4cb65a9ab97",
-        "name": "My Other Player",
-        "chosenAnswer": "I don't know"
+        "name": "My Other Player"
       }
     ],
     "scores": [
