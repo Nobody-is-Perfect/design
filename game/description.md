@@ -229,7 +229,7 @@ var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port 
 ```
 
 4. All players provide an answer to complete the sentence given by the current question. All players can complete the question with an arbitrary solution not being equal to the correct answer. The correct answer is provided by the backend automatically:
-ient:
+
 ```json
 {
   "event": "round.question.completion_performed",
