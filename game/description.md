@@ -149,15 +149,103 @@ var webSocket = new WebSocket("ws://" + location.hostname + ":" + location.port 
 
 ## Flow of a round
 
-1. A player `P` is randomly selected to choose the current topic. (`/game/{game_id}/topics`)
-2. This player `P` choses the current topic.
-3. The server choses a random question that is from that topic.
-4. All players provide an answer to complete the sentence given by the current question.
+0. The round has started. A player `P` is randomly selected to choose the current topic by the backend. 
+
+```
+{
+  "event": "round.started",
+  "payload": {
+    "playerToPerformSelection": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+    "availableTopics": [
+      "topic1",
+      "topic2",
+      "topic3"
+    ]
+  }
+}
+```
+
+2. This player `P` choses the current topic by publishing a message to the websocket:
+
+```
+{
+  "event": "round.topic.selection_performed",
+  "payload": {
+    "chosenTopic": "topic1"
+  }
+}
+```
+
+3. The server choses a random question that is from that topic and notifies each subscribed client:
+```
+{
+  "event": "round.question.completion_requested",
+  "payload": {
+    "chosenTopic": "topic1",
+    "chosenQuestion": "What is the answer to life, the universe and everything? {placeholder}"
+  }
+}
+```
+
+4. All players provide an answer to complete the sentence given by the current question. Player `P` is supposed to answer the question honestly, whereas all players `P_i != P` can complete the question with an arbitrary solution:
+ient:
+```
+{
+  "event": "round.question.completion_performed",
+  "payload": {
+    "chosenTopic": "topic1",
+    "chosenQuestion": "What is the answer to life, the universe and everything? {placeholder}",
+    "chosenAnswer": "42"
+  }
+}
+```
 5. The server provides all players with the options.
-6. All players make a choice
-7. The server presents who voted for what answer, and highlights the correct answer
-8. The server presents the current score
-9. The next round starts
+```
+{
+  "event": "round.answer.selection_requested",
+  "payload": {
+    "chosenTopic": "topic1",
+    "chosenQuestion": "What is the answer to life, the universe and everything? {placeholder}",
+    "availableAnswers": ["42", "..."]
+  }
+}
+```
+
+6. All players make a choice:
+```
+{
+  "event": "round.answer.selection_performed",
+  "payload": {
+    "playerId": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+    "chosenTopic": "topic1",
+    "chosenQuestion": "What is the answer to life, the universe and everything? {placeholder}",
+    "chosenAnswer": ["42", "..."]
+  }
+}
+```
+7. The server presents who voted for what answer, highlights the correct answer, and provides the latest score:
+```
+{
+  "event": "round.ended",
+  "payload": {
+    "chosenTopic": "topic1",
+    "chosenQuestion": "What is the answer to life, the universe and everything? {placeholder}",
+    "correctAnswer": "42",
+    "scores": [
+      {
+        "playerId": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+        "score": 10,
+      },
+      {
+        "playerId": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
+        "score": 2,
+      }
+    ]
+  }
+}
+```
+
+The same procedure repeats from the beginning.
 
 ## Score computation
 
