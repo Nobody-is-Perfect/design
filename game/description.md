@@ -40,7 +40,10 @@ Content-Type: application/json
 Location: /games/74f3f450-86c9-4525-bd15-d94bd02bd775
 
 {
-  "id": "74f3f450-86c9-4525-bd15-d94bd02bd775"
+  "id": "74f3f450-86c9-4525-bd15-d94bd02bd775",
+  "name": "My GameName",
+  "numberOfRounds": 3,
+  "status": "waiting-for-players",
 }
 ```
 
@@ -92,8 +95,9 @@ Content-Type: application/json
 
 [{
   "id": "74f3f450-86c9-4525-bd15-d94bd02bd775",
-  "numberOfRounds": 3,
   "name": "My GameName",
+  "numberOfRounds": 3,
+  "status": "waiting-for-players",
   "players": [
     {
       "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
