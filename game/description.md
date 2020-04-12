@@ -302,11 +302,13 @@ Once all rounds have been played, the following event is sent to all clients and
     "players": [
       {
         "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64",
-        "name": "My PlayerName"
+        "name": "My PlayerName",
+        "chosenAnswer": "42"
       },
       {
         "id": "83f8e222-e150-4b85-9026-d4cb65a9ab97",
-        "name": "My Other Player"
+        "name": "My Other Player",
+        "chosenAnswer": "I don't know"
       }
     ],
     "scores": [
