@@ -109,11 +109,11 @@ Content-Type: application/json
 
 Subsequently, they are free to join any of the non-started games:
 ```
-POST /games/74f3f450-86c9-4525-bd15-d94bd02bd775/join HTTP/1.1 
+POST /games/74f3f450-86c9-4525-bd15-d94bd02bd775/players HTTP/1.1 
 Content-Type: application/json
 
 {
-  "player": "83f8e222-e150-4b85-9026-d4cb65a9ab97"
+  "id": "83f8e222-e150-4b85-9026-d4cb65a9ab97"
 }
 
 
