@@ -49,11 +49,11 @@ Location: /games/74f3f450-86c9-4525-bd15-d94bd02bd775
 
 The player immediately joins this new game.
 ```
-POST /games/74f3f450-86c9-4525-bd15-d94bd02bd775/join HTTP/1.1 
+POST /games/74f3f450-86c9-4525-bd15-d94bd02bd775/players HTTP/1.1 
 Content-Type: application/json
 
 {
-  "player": "c47dbdc6-7778-41fc-a456-5ba74e365f64"
+  "id": "c47dbdc6-7778-41fc-a456-5ba74e365f64"
 }
 
 
